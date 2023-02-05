@@ -1,6 +1,7 @@
 package com.imedia.project.services;
 
 import com.imedia.project.dto.CategoryDto;
+import com.imedia.project.dto.ConversionDto;
 import com.imedia.project.dto.ProductDto;
 import com.imedia.project.entites.Category;
 import com.imedia.project.entites.Product;
@@ -23,5 +24,7 @@ public interface IServiceInterface {
     Product createProduct(ProductDto productDto);
 
     Category createCategory(CategoryDto categoryDto);
+
+    ConversionDto convertDevise(String deviseSource , String deviseTarget , String amount);
 
 }
