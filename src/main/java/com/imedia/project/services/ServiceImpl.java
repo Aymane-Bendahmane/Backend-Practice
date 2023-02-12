@@ -1,33 +1,29 @@
 package com.imedia.project.services;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.imedia.project.exceptions.ExceptionHandler;
 import com.imedia.project.dto.CategoryDto;
 import com.imedia.project.dto.ConversionDto;
 import com.imedia.project.dto.ProductDto;
 import com.imedia.project.entites.Category;
 import com.imedia.project.entites.Product;
-import com.imedia.project.repositories.CategoryRepository;
-import com.imedia.project.repositories.ProductRepository;
-import com.imedia.project.utilities.ApiConfig;
-import com.imedia.project.utilities.CategoryMapper;
-import com.imedia.project.utilities.ProductMapper;
+import com.imedia.project.repositories.*;
+import com.imedia.project.mappers.*;
+import com.imedia.project.utilities.HttpRequestsExecutor;
 import lombok.NoArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestClientException;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.imedia.project.utilities.Tools.ERROR_MESSAGE;
-import static com.imedia.project.utilities.Tools.isNullOrEmpty;
+import static com.imedia.project.utilities.Tools.*;
 
 @Service
 @NoArgsConstructor
@@ -38,14 +34,11 @@ public class ServiceImpl implements IServiceInterface {
     @Autowired
     CategoryRepository categoryRepository;
 
-
-   public final RestTemplate restTemplate = new RestTemplate();
-
     @Autowired
-    ApiConfig apiConfig;
-
+    HttpRequestsExecutor httpRequestsExecutor;
     Logger logger = LoggerFactory.getLogger(ServiceImpl.class);
 
+    ObjectMapper objectMapper = new ObjectMapper();
     @Override
     public List<Product> productsList() {
         return productRepository.findAll();
@@ -94,29 +87,35 @@ public class ServiceImpl implements IServiceInterface {
         return categoryRepository.save(category);
     }
 
+    /**
+     * This method convert a given amount from a currency to a target one using external api
+     * @param deviseSource
+     * @param deviseTarget
+     * @param amount
+     * @return ConversionDto
+     * @throws Exception
+     *
+     * @Author Aymane BENDAHMANE
+     */
     @Override
-    public ConversionDto convertDevise(String deviseSource, String deviseTarget, String amount) {
+    public ConversionDto convertDevise(String deviseSource, String deviseTarget, String amount) throws Exception {
         if (isNullOrEmpty(deviseSource) || isNullOrEmpty(deviseTarget) || isNullOrEmpty(amount))
-            throw new IllegalArgumentException("Bad parameters format");
-        System.out.println("Key : "+apiConfig.toString());
-        ResponseEntity<ConversionDto> o = null;
+            throw new ExceptionHandler(BAD_PARAMETER, HttpStatus.BAD_REQUEST);
+        ConversionDto conversionDto;
         try {
-            HttpHeaders httpHeaders = new HttpHeaders();
-            httpHeaders.add("apikey", apiConfig.getKey());
-            httpHeaders. add("user-agent", "Application");
-            Map<String,String> params = new HashMap<>();
-            params.put("from",deviseSource);
-            params.put("to",deviseTarget);
-            params.put("amount",amount);
-            HttpEntity<String> entity = new HttpEntity<>(httpHeaders);
-            logger.info("Params : "+ params);
-            logger.info("Headers : "+entity.getHeaders());
-            o = restTemplate.exchange(apiConfig.getConvert(), HttpMethod.GET, entity, ConversionDto.class,params);
-        }catch (Exception  e ){
-            System.out.println(e);
+            Map<String, String> params = new HashMap<>();
+            params.put(FROM, deviseSource);
+            params.put(TO, deviseTarget);
+            params.put(AMOUNT, amount);
+            conversionDto = objectMapper.convertValue(httpRequestsExecutor.executeGet(params),ConversionDto.class);
+        }catch(IllegalArgumentException e){
+            throw new ExceptionHandler(ERROR_CASTING_OBJECTS, HttpStatus.INTERNAL_SERVER_ERROR);
+        }catch (RestClientException e) {
+            throw new ExceptionHandler(ERROR_EXTERNAL_API_CALL,HttpStatus.INTERNAL_SERVER_ERROR);
+        }catch (Exception e){
+            throw new ExceptionHandler(INTERNAL_SERVER_ERROR,HttpStatus.INTERNAL_SERVER_ERROR);
         }
-
-        return o.getBody();
+        return conversionDto ;
     }
 
 }

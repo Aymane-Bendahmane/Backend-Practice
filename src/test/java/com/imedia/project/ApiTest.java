@@ -1,19 +1,12 @@
 package com.imedia.project;
 
-import com.imedia.project.dto.ConversionDto;
 import com.imedia.project.services.ServiceImpl;
 import com.imedia.project.utilities.ApiConfig;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
-
-import java.time.LocalDate;
 
 @ExtendWith(MockitoExtension.class)
 public class ApiTest {

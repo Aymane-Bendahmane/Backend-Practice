@@ -4,7 +4,7 @@ import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.util.Date;
 
 @Data
 @Getter
@@ -12,7 +12,8 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor@AllArgsConstructor
 public class ConversionDto{
-    public LocalDate date;
+    @DateTimeFormat(pattern = "yyyy/MM/dd")
+    public Date date;
     public Info info;
     public Query query;
     public double result;

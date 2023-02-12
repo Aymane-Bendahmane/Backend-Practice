@@ -25,6 +25,6 @@ public interface IServiceInterface {
 
     Category createCategory(CategoryDto categoryDto);
 
-    ConversionDto convertDevise(String deviseSource , String deviseTarget , String amount);
+    ConversionDto convertDevise(String deviseSource , String deviseTarget , String amount) throws Exception;
 
 }

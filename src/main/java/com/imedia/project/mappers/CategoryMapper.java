@@ -1,4 +1,4 @@
-package com.imedia.project.utilities;
+package com.imedia.project.mappers;
 
 import com.imedia.project.dto.CategoryDto;
 import com.imedia.project.entites.Category;
