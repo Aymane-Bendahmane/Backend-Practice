@@ -6,25 +6,26 @@ import org.springframework.http.HttpStatus;
 
 @Setter
 @Getter
-public class ExceptionHandler extends Exception{
+public class MyException extends Exception{
     private HttpStatus httpStatus;
-    public ExceptionHandler() {
+    public MyException(String message) {
+        super(message);
     }
 
-    public ExceptionHandler(String message, HttpStatus httpStatus) {
+    public MyException(String message, HttpStatus httpStatus) {
         super(message);
         this.httpStatus = httpStatus;
     }
 
-    public ExceptionHandler(String message, Throwable cause) {
+    public MyException(String message, Throwable cause) {
         super(message, cause);
     }
 
-    public ExceptionHandler(Throwable cause) {
+    public MyException(Throwable cause) {
         super(cause);
     }
 
-    public ExceptionHandler(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+    public MyException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
     }
 }

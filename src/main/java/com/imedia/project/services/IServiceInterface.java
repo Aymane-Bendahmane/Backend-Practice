@@ -5,7 +5,7 @@ import com.imedia.project.dto.ConversionDto;
 import com.imedia.project.dto.ProductDto;
 import com.imedia.project.entites.Category;
 import com.imedia.project.entites.Product;
-
+import com.imedia.project.exceptions.MyException;
 import java.util.List;
 
 public interface IServiceInterface {
@@ -21,10 +21,12 @@ public interface IServiceInterface {
 
     Category getCategoryByName(String name);
 
-    Product createProduct(ProductDto productDto);
+    ProductDto createProduct(ProductDto productDto) throws MyException;
 
-    Category createCategory(CategoryDto categoryDto);
+    CategoryDto createCategory(CategoryDto categoryDto) throws MyException;
 
-    ConversionDto convertDevise(String deviseSource , String deviseTarget , String amount) throws Exception;
+    ConversionDto convertDevise(String deviseSource , String deviseTarget , String amount) throws MyException;
+
+    void initData();
 
 }
