@@ -18,4 +18,5 @@ public class ProductDto {
     private String name;
     @NotNull
     private Double price;
+    private CategoryDto category;
 }

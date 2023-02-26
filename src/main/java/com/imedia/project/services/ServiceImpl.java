@@ -1,18 +1,19 @@
 package com.imedia.project.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.imedia.project.exceptions.MyException;
 import com.imedia.project.dto.CategoryDto;
 import com.imedia.project.dto.ConversionDto;
 import com.imedia.project.dto.ProductDto;
 import com.imedia.project.entites.Category;
 import com.imedia.project.entites.Product;
-import com.imedia.project.repositories.*;
-import com.imedia.project.mappers.*;
+import com.imedia.project.exceptions.MyException;
+import com.imedia.project.mappers.CategoryMapper;
+import com.imedia.project.mappers.ProductMapper;
+import com.imedia.project.repositories.CategoryRepository;
+import com.imedia.project.repositories.ProductRepository;
 import com.imedia.project.utilities.HttpRequestsExecutor;
-import lombok.NoArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.*;
+import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestClientException;
@@ -27,43 +28,40 @@ import java.util.stream.IntStream;
 import static com.imedia.project.utilities.Tools.*;
 
 @Service
-@NoArgsConstructor
+@AllArgsConstructor
 public class ServiceImpl implements IServiceInterface {
-    @Autowired
-    ProductRepository productRepository;
+    private final ProductRepository productRepository;
 
-    @Autowired
-    CategoryRepository categoryRepository;
+    private final CategoryRepository categoryRepository;
 
-    @Autowired
-    HttpRequestsExecutor httpRequestsExecutor;
+    private final HttpRequestsExecutor httpRequestsExecutor;
 
-    ObjectMapper objectMapper = new ObjectMapper();
+    ObjectMapper objectMapper;
 
     @Override
-    public List<Product> productsList() {
-        return productRepository.findAll();
+    public List<ProductDto> productsList() {
+        return ProductMapper.INSTANCE.DTO_LIST(productRepository.findAll());
     }
 
     @Override
-    public List<Product> productsListByCategory(String name) {
+    public List<ProductDto> productsListByCategory(String name) {
         Category category = getCategoryByName(name);
-        return productRepository.findProductsByCategory(category);
+        return ProductMapper.INSTANCE.DTO_LIST(productRepository.findProductsByCategory(category));
     }
 
     @Override
-    public List<Category> categoriesList() {
-        return categoryRepository.findAll();
+    public List<CategoryDto> categoriesList() {
+        return CategoryMapper.INSTANCE.DTO_LIST(categoryRepository.findAll());
     }
 
     @Override
-    public Product getProductById(Long id) {
-        return productRepository.getReferenceById(id);
+    public ProductDto getProductById(Long id) {
+        return ProductMapper.INSTANCE.productToDto(productRepository.getReferenceById(id));
     }
 
     @Override
-    public Category getCategoryById(Long id) {
-        return categoryRepository.getReferenceById(id);
+    public CategoryDto getCategoryById(Long id) {
+        return CategoryMapper.INSTANCE.categoryToDto(categoryRepository.getReferenceById(id));
     }
 
     @Override
@@ -75,8 +73,10 @@ public class ServiceImpl implements IServiceInterface {
     @Override
     @Transactional
     public ProductDto createProduct(ProductDto productDto) throws MyException {
+        Category category = categoryRepository.findCategoryByName(productDto.getCategory().getName());
+        if (category == null) throw new MyException(ERROR_MESSAGE);
         Product product = ProductMapper.INSTANCE.dtoToProduct(productDto);
-        if (product == null) throw new MyException(ERROR_MESSAGE);
+        product.setCategory(category);
         return ProductMapper.INSTANCE.productToDto(productRepository.save(product));
     }
 

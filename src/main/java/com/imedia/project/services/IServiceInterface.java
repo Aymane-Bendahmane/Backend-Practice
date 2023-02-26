@@ -4,20 +4,20 @@ import com.imedia.project.dto.CategoryDto;
 import com.imedia.project.dto.ConversionDto;
 import com.imedia.project.dto.ProductDto;
 import com.imedia.project.entites.Category;
-import com.imedia.project.entites.Product;
 import com.imedia.project.exceptions.MyException;
+
 import java.util.List;
 
 public interface IServiceInterface {
-    List<Product> productsList();
+    List<ProductDto> productsList();
 
-    List<Category> categoriesList();
+    List<CategoryDto> categoriesList();
 
-    List<Product> productsListByCategory(String name);
+    List<ProductDto> productsListByCategory(String name);
 
-    Product getProductById(Long id);
+    ProductDto getProductById(Long id);
 
-    Category getCategoryById(Long id);
+    CategoryDto getCategoryById(Long id);
 
     Category getCategoryByName(String name);
 
@@ -25,7 +25,7 @@ public interface IServiceInterface {
 
     CategoryDto createCategory(CategoryDto categoryDto) throws MyException;
 
-    ConversionDto convertDevise(String deviseSource , String deviseTarget , String amount) throws MyException;
+    ConversionDto convertDevise(String deviseSource, String deviseTarget, String amount) throws MyException;
 
     void initData();
 
