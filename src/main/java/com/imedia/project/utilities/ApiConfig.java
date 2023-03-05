@@ -11,10 +11,11 @@ import org.springframework.context.annotation.Configuration;
 @Getter
 public class ApiConfig {
 
-    String convert ;
+    String convert;
     String latest;
-    String symbols ;
+    String symbols;
     String key;
+    String secretKey;
 
     @Override
     public String toString() {
